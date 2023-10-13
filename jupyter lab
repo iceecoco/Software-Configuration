@@ -1,0 +1,60 @@
+## 配置参考： https://zhuanlan.zhihu.com/p/154310404
+conda install -c conda-forge jupyterlab
+# 下载libffi7库
+sudo apt-get install libffi7
+
+# 修改密码
+jupyter notebook --generate-config   #创建jupyter的py文件
+cd .jupyter/  #先进入jupyter所在的文件夹
+vim jupyter_notebook_config.py  #修改notebook配置文件
+   # 修改以下几行，将其从注释改为非注释
+      c.NotebookApp.ip = '*'
+      c.NotebookApp.open_browser = False
+jupyter notebook password
+cat jupyter_notebook_config.json  #这个文件中保留了密码的信息，将这一段复制下来
+# 修改配置文件
+jupyter lab --generate-config 
+vim jupyter_lab_config.py
+    # 修改添加以下几行
+      c = get_config()  #noqa
+      c.NotebookApp.ip='*'
+      c.NotebookApp.password = "argon2:$argon2id$v=19$m=10240,t=10,p=8$uUgwiIW9j/2SUtVRx7rlKQ$W9dmMyKIi05ZKLT6WMpofZlRO592P82VD9aa7BOmHNE" 
+      c.NotebookApp.open_browser = False
+      c.NotebookApp.port =8989 #可自行指定一个端口, 访问时使用该端口
+      c.ExtensionApp.open_browser = False
+
+
+# 再次修改密码
+ipython
+In[1]: from notebook.auth import passwd
+In[2]: passwd()
+Enter password:
+Verify password:
+# 此时会出现一长串："argon2:$argon2id$v=19$m=10240,t=10,p=8$uUgwiIW9j/2SUtVRx7rlKQ$W9dmMyKIi05ZKLT6WMpofZlRO592P82VD9aa7BOmHNE"  # 复制下来
+# 进入jupyter所在文件夹
+vim jupyter_notebook_config.json 
+    # 将"password"后面改成对应的复制下来的密码的信息
+vim jupyter_lab_config.py
+    # 同样对密码部分进行修改
+
+
+
+# 配置jupyter环境
+jupyter lab
+  # 可以看到提供了这样一个东西：[I 2023-10-13 14:11:17.415 ServerApp]  or http://127.0.0.1:8989/lab
+# MobaXterm最上方菜单栏有一个Tunneling，点击New SSH tunnel
+# local port forwarding
+   # Remote server：输入上面提供的：127.0.0.1
+   # Remote port：输入上面提供的(前面配置文件自己改的)：8989
+      # SSH server：输入10.19.26.62（服务器IP）
+      # SSH login：输入yangly（服务器用户名）
+      # SSH port：输入服务器端口号22
+# 点击save，然后可以看到SSHTunnel中有一个start/stop的按钮，选择start
+
+
+# 打开并使用jupyter
+   1. 首先需要保证Tunneling里面是处于Start的状态
+   2. 其次在mobaXterm里面cd到根目录（这里处于什么目录，待会打开可视化界面就是从这个目录开始，无法返回上一级目录）
+   3. 然后在服务器中输入 jupyter lab
+   4. 进入浏览器，输入 127.0.0.1:8989/lab 
+   5. 输入密码即可使用
